@@ -1,15 +1,16 @@
-import React,{Component} from 'react';
+import React, { useState } from 'react';
 
-const Ejercicio2=()=>{
-    const[dia,setDias] = useState("");
-    const cambioDias=(e,setDia)=>{
+const Ejercicio2 = () => {
+    const [dia, setDia] = useState('');
+
+    const cambioDias = (e) => {
         setDia(e.target.value);
-    }
+    };
 
-    return(
+    return (
         <div>
             <h1>Selección de día de la semana</h1>
-            <select onChange={(e)=>cambioDias(e,setDia)}>
+            <select onChange={cambioDias}>
                 <option value="Lunes">Lunes</option>
                 <option value="Martes">Martes</option>
                 <option value="Miércoles">Miércoles</option>
@@ -18,7 +19,9 @@ const Ejercicio2=()=>{
                 <option value="Sábado">Sábado</option>
                 <option value="Domingo">Domingo</option>
             </select>
-            <p>{dia? `Has seleccionado: ${dia}` : 'Aún no has seleccionado ningún día'}</p>
+            <p>{dia ? `Has seleccionado: ${dia}` : 'Aún no has seleccionado ningún día'}</p>
         </div>
     );
 };
+
+export default Ejercicio2;
