@@ -4,6 +4,9 @@ import { useState } from 'react';
 import Ejercicio1 from './components/ejercicio1';
 import Ejercicio2 from './components/ejercicio2';
 import Ejercicio3 from './components/ejercicio3';
+import Ejercicio4 from './components/ejercicio4';
+import Ejercicio5 from './components/ejercicio5'; 
+
 
 
 function App() {
@@ -65,6 +68,32 @@ function App() {
           {openIndex === 2 && (
             <div className="accordion-body">
               <Ejercicio3/>
+            </div>
+          )}
+        </div>
+        <div className="accordion-item">
+          <div
+            className="accordion-header"
+            onClick={() => ejercicios(3)}
+          >
+            <h2>Ejercicio 4: Formulario</h2>
+          </div>
+          {openIndex === 3 && (
+            <div className="accordion-body">
+              <Ejercicio4/>
+            </div>
+          )}
+        </div>
+        <div className="accordion-item">
+          <div
+            className="accordion-header"
+            onClick={() => ejercicios(4)}
+          >
+            <h2>Ejercicio 4: Lanzar dado</h2>
+          </div>
+          {openIndex === 4 && (
+            <div className="accordion-body">
+              <Ejercicio5/>
             </div>
           )}
         </div>
