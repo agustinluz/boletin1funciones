@@ -1,123 +1,108 @@
-/*
-Utilizar el componente anterior para crear un juego de 2 a 4 jugadores. Al inicio pedirá el
-número de participantes, el nombre de cada uno y posteriormente realizará las tiradas por
-turnos, hasta un total de 5. Irá mostrando la puntuación parcial junto con la media y al
-acabar mostrará la clasificación final.
-*/
-import React,{useState} from "react";
-import { Button } from 'react-bootstrap';
-import { Form } from 'react-bootstrap';
-import { Table } from 'react-bootstrap';
+import React, { useState } from 'react';
+import './Dado.css';
 
-const juegoDados = () => {
-    const [jugadores,setJugadores] = useState([]);
-    const [tiradas,setTiradas] = useState([]);
-    const [turno,setTurno] = useState(0);
-    const [puntuaciones,setPuntuaciones] = useState([]);
+const Dado = () => {
+    // Aquí guardamos el número de jugadores
+    const [jugadores, setJugadores] = useState(0);
+    // Aquí guardamos los nombres de los jugadores
+    const [nombreJugadores, setNombreJugadores] = useState([]);
+    // Aquí guardamos los puntos de cada jugador
+    const [puntos, setPuntos] = useState(Array(4).fill(Array(7).fill(0)));
+    // Aquí guardamos la ronda actual
+    const [ronda, setRonda] = useState(0);
 
-    const addJugador = (e) => {
-        e.preventDefault();
-        let jugador = e.target.jugador.value;
-        setJugadores([...jugadores,jugador]);
-        e.target.jugador.value = "";
-    }
+    // Esta función se llama cuando seleccionamos el número de jugadores
+    const asignaJugadores = (event) => {
+        setJugadores(Number(event.target.value));
+    };
 
-    const addTirada = () => {
-        let tirada = Math.floor(Math.random() * 6) + 1;
-        setTiradas([...tiradas,tirada]);
-        setTurno(turno + 1);
-    }
-    
-    const calcularMedia = () => {
-        let suma = puntuaciones.reduce((a, b) => a + b, 0);
-        return suma / puntuaciones.length;
-    }
-    
-    const calcularClasificacion = () => {
-        let clasificacion = [...jugadores].sort((a, b) =>
-             puntuaciones[jugadores.indexOf(b)] - puntuaciones[jugadores.indexOf(a)]);
-        return clasificacion;
-    }
-    
-    const calcularPuntuacion = () => {
-        let puntuacion = 0;
-        tiradas.forEach(tirada => puntuacion += tirada);
-        return puntuacion;
-    }
-    
-    const calcularPuntuaciones = () => {
-        let puntuaciones = [];
-        for (let i = 0; i < jugadores.length; i++) {
-            let puntuacion = 0;
-            for (let j = 0; j < tiradas.length; j++) {
-                puntuacion += tiradas[j];
-            }
-            puntuaciones.push(puntuacion);
+    // Esta función se llama para preguntar los nombres de los jugadores
+    const preguntaNombres = () => {
+        const nuevosJugadores = [];
+        for (let i = 1; i <= jugadores; i++) {
+            let nombreJug = prompt(`Introduce el nombre del Jugador ${i}`, `Jugador ${i}`);
+            nuevosJugadores.push(nombreJug);
         }
-        setPuntuaciones(puntuaciones);
-    }
-    
+        setNombreJugadores(nuevosJugadores);
+    };
+
+    // Esta función se llama para lanzar el dado
+    const lanzaDado = () => {
+        if (nombreJugadores.length <= 1) {
+            alert("Debes asignar los jugadores");
+        } else {
+            const nuevosPuntos = puntos.map((jugador, i) => {
+                if (i < jugadores) {
+                    const numAleatorio = Math.floor(Math.random() * 6 + 1);
+                    const nuevosJugadorPuntos = [...jugador];
+                    nuevosJugadorPuntos[ronda] = numAleatorio;
+                    const sumaPuntos = nuevosJugadorPuntos[5] + numAleatorio;
+                    nuevosJugadorPuntos[5] = sumaPuntos;
+                    nuevosJugadorPuntos[6] = (sumaPuntos / (ronda + 1)).toFixed(2);
+                    return nuevosJugadorPuntos;
+                }
+                return jugador;
+            });
+            setPuntos(nuevosPuntos);
+            setRonda(ronda + 1);
+        }
+    };
+
+    // Esta función se llama para mostrar el ganador
+    const muestraGanador = () => {
+        let mayorPuntuacion = 0;
+        let ganador = "";
+
+        for (let i = 0; i < jugadores; i++) {
+            const puntuacionTotal = puntos[i][5];
+            if (puntuacionTotal > mayorPuntuacion) {
+                mayorPuntuacion = puntuacionTotal;
+                ganador = nombreJugadores[i];
+            }
+        }
+
+        alert(`El ganador es ${ganador} con ${mayorPuntuacion} puntos.`);
+    };
+
     return (
         <div>
-            <h1>Juego de dados</h1>
-            <Form onSubmit={addJugador}>
-                <Form.Group>
-                    <Form.Label>Nombre del jugador</Form.Label>
-                    <Form.Control type="text" name="jugador" />
-                </Form.Group>
-                <Button type="submit">Añadir jugador</Button>
-            </Form>
-            <Button onClick={addTirada}>Lanzar</Button>
-            {jugadores.length > 0 && (
-                <Table striped bordered hover>
-                    <thead>
-                        <tr>
-                            <th>Jugador</th>
-                            <th>Puntuación</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {jugadores.map((jugador, index) => (
-                            <tr key={index}>
-                                <td>{jugador}</td>
-                                <td>{puntuaciones[index]}</td>
-                            </tr>
-                        ))}
-
-                    </tbody>
-                </Table>
-            )}
-            {turno === 5 && (
-                <div>
-                    <h2>Clasificación final</h2>
-                    <Table striped bordered hover>
-                        <thead>
-                            <tr>
-                                <th>Posición</th>
-                                <th>Jugador</th>
-                                <th>Puntuación</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {calcularClasificacion().map((jugador, index) => (
-                                <tr key={index}>
-                                    <td>{index + 1}</td>
-                                    <td>{jugador}</td>
-                                    <td>{puntuaciones[jugadores.indexOf(jugador)]}</td>
-                                </tr>
+            <p>
+                <select value={jugadores} onChange={asignaJugadores}>
+                    <option value="" disabled>- Jugadores -</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+                <button onClick={preguntaNombres} disabled={jugadores === 0}>Comenzar partida</button>
+                <button onClick={lanzaDado} disabled={ronda === 5 || nombreJugadores.length === 0}>Tirar dados</button>
+                <button onClick={muestraGanador} disabled={ronda !== 5 || nombreJugadores.length === 0}>Ver ganador</button>
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Jugador</th>
+                        <th>RONDA 1</th>
+                        <th>RONDA 2</th>
+                        <th>RONDA 3</th>
+                        <th>RONDA 4</th>
+                        <th>RONDA 5</th>
+                        <th>TOTAL</th>
+                        <th>MEDIA</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {nombreJugadores.map((jugador, index) => (
+                        <tr key={index}>
+                            <td>{jugador}</td>
+                            {puntos[index].map((punto, puntoIndex) => (
+                                <td key={puntoIndex}>{punto}</td>
                             ))}
-                        </tbody>
-                    </Table>
-                    <p>Media: {calcularMedia()}</p>
-                    <Button onClick={reiniciarJuego}>Reiniciar juego</Button>
-                </div>
-            )}
-            
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
-
     );
-
-
 };
 
-export default juegoDados;
+export default Dado;
