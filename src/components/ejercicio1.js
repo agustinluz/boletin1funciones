@@ -1,3 +1,7 @@
+/**
+ * 1. Crear una aplicación con dos controles tipo number y un botón. Al pulsar el botón deberá
+    mostrarse en un alert la suma de los números.
+*/
 import React, { useState } from 'react';
 
 const Ejercicio1 = () => {
@@ -12,6 +16,7 @@ const Ejercicio1 = () => {
     const cambioNumero = (e) => {
         setNum1(Number(e.target.value));
     };
+
     const cambioNumero2 = (e) => {
         setNum2(Number(e.target.value));
     };
